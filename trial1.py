@@ -84,7 +84,8 @@ def show_score(choice, color, font, size):
     
     # create the display surface object 
     # score_surface
-    score_surface = score_font.render('Score : ' + str(score), True, color)
+    high_score = get_high_score()
+    score_surface = score_font.render(f'Score: {score}  High: {high_score}', True, color) 
     
     # create a rectangular object for the text
     # surface object
@@ -92,6 +93,7 @@ def show_score(choice, color, font, size):
     
     # displaying text
     game_window.blit(score_surface, score_rect)
+    
 
 # game over function
 def game_over():
@@ -114,6 +116,8 @@ def game_over():
     # blit will draw the text on screen
     game_window.blit(game_over_surface, game_over_rect)
     pygame.display.flip()
+
+    save_score(score)
     
     # after 2 seconds we will quit the program
     time.sleep(2)
@@ -123,6 +127,23 @@ def game_over():
     
     # quit the program
     quit()
+
+def save_score(score):
+    scores_sheet = "scores.csv"
+    
+    
+    df = pd.read_csv(scores_sheet)
+    
+    new_row = pd.DataFrame({"score": [score]})
+    df = pd.concat([df, new_row], ignore_index=True)
+    
+    df.to_csv(scores_sheet, index=False)
+
+
+def get_high_score():
+    df = pd.read_csv("scores.csv")
+    return df.max().max()
+
 
 
 # Main Function
@@ -201,6 +222,7 @@ while True:
 
     # displaying score continuously
     show_score(1, white, 'times new roman', 20)
+
 
     # Refresh game screen
     pygame.display.update()
