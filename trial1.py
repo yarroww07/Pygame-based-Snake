@@ -18,6 +18,9 @@ green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 yellow = pygame.Color(255, 255, 0)
 
+
+
+
 # Initialising pygame
 pygame.init()
 
@@ -28,6 +31,10 @@ game_window = pygame.display.set_mode((window_x, window_y))
 # FPS (frames per second) controller
 fps = pygame.time.Clock()
 
+
+
+
+
 # defining snake default position
 snake_position = [100, 50]
 
@@ -37,6 +44,10 @@ snake_body = [[100, 50],
               [80, 50],
               [70, 50]
               ]
+
+# Borders
+
+
 # fruit position
 
 fruit_dictionary = {'normal': {
@@ -204,12 +215,29 @@ while True:
     fruit_color = fruit_dictionary[selected_fruit]['color']
 
     for pos in snake_body:
+        for x in range(0, 800, 10):
+            pygame.draw.line(game_window, (150,150,150), (x,0), (x,600))
+        for y in range(0, 600, 10):
+            pygame.draw.line(game_window, (150,150,150), (0,y), (800,y))
         pygame.draw.rect(game_window, green,
                          pygame.Rect(pos[0], pos[1], 10, 10))
     pygame.draw.rect(game_window, fruit_color, pygame.Rect(
         fruit_position[0], fruit_position[1], 10, 10))
+    # points = [(400,50), (500,150)]
+    # border_right = pygame.draw.line(game_window, red, (0,0), points,10)
+    # print('border left')
+    # border_left = pygame.draw.line(game_window, white,(50,0),(50,480),10)
+    # print('etc')
+    # border_up = pygame.draw.line(game_window, green,(720,0),(720,480),10)
+    # border_down = pygame.draw.line(game_window, yellow,(0,480),(720,480),10)
+    # print(border_left)
+
+    
+
 
     # Game Over conditions
+    # if snake_position[0] > border_left[0]:
+    #     game_over()
     if snake_position[0] < 0 or snake_position[0] > window_x-10:
         game_over()
     if snake_position[1] < 0 or snake_position[1] > window_y-10:
