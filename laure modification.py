@@ -151,15 +151,14 @@ while True:
     if snake_position[0] == fruit_position[0] and snake_position[1] == fruit_position[1]:
         score += 10
         fruit_spawn = False
+        
 #this condition is for the effects of the poison fruit        
     if snake_position[0] == poison_position[0] and snake_position[1] == poison_position[1]:
     
         score -= 10
-        poison_spawn.time.sleep(4)
+        poison_position = [random.randrange(1, (window_x//10))*10,
+                           random.randrange(1, (window_y//10))*10]
         poison_spawn = False
-        #time.sleep(4)         
-        #poison_position = [random.randrange(1, (window_x//10))*10,
-                           #random.randrange(1, (window_y//10))*10]
     
     else:
         snake_body.pop()
@@ -167,15 +166,14 @@ while True:
     if not fruit_spawn:
         fruit_position = [random.randrange(1, (window_x//10)) * 10, 
                           random.randrange(1, (window_y//10)) * 10]
-    
-#after the poison is eaten the poison fruit will respawn    
-    if not poison_spawn:
-        #this fonction will delay the appearnce of the poison
-        #wont appear as often as the regular fruit
-        time.sleep(10)         
+        
+#after the white fruit is open the poison fruit will change location   
         poison_position = [random.randrange(1, (window_x//10))*10,
                            random.randrange(1, (window_y//10))*10]
+    
     fruit_spawn = True
+    poison_spawn = True
+    
     game_window.fill(black)
     
     for pos in snake_body:
@@ -185,11 +183,14 @@ while True:
         fruit_position[0], fruit_position[1], 10, 10))
     
 
-#to allow the poison to appear as red(MUST REVIEW)
+#to allow the poison to appear as red
     pygame.draw.rect(game_window, red, pygame.Rect(
         poison_position[0], fruit_position[1], 10, 10))
 
     # Game Over conditions
+    #new game condition that you cannot go under score = 0
+    if score < 0:
+        game_over()
     if snake_position[0] < 0 or snake_position[0] > window_x-10:
         game_over()
     if snake_position[1] < 0 or snake_position[1] > window_y-10:
