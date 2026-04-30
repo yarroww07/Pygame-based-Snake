@@ -32,6 +32,12 @@ game_window = pygame.display.set_mode((window_x, window_y))
 fps = pygame.time.Clock()
 
 
+# BONUS FRUIT VARIABLES
+bonus_fruit_spawn = False
+bonus_fruit_position = [0, 0]
+bonus_fruit_timer = 0
+bonus_fruit_duration = random.randint(5000,10000)
+bonus_fruit_spawn_chance = 0.001 #per frame i think? 
 
 
 
@@ -213,6 +219,26 @@ while True:
     game_window.fill(black)
     
     fruit_color = fruit_dictionary[selected_fruit]['color']
+
+    if not bonus_fruit_spawn:
+        if random.random() < bonus_fruit_spawn_chance:
+            bonus_fruit_spawn = True
+            bonus_fruit_position = [
+                random.randrange(1, (window_x // 10)) * 10,
+                random.randrange(1, (window_y//10)) * 10
+            ]
+            bonus_fruit_timer = pygame.time.get_ticks()
+    else:
+        if pygame.time.get_ticks() - bonus_fruit_timer > bonus_fruit_duration:
+            bonus_fruit_spawn = False
+
+        if snake_position[0] == bonus_fruit_position[0] and snake_position[1] == bonus_fruit_position[1]:
+            score += fruit_dictionary['multiplier']['score'] 
+            bonus_fruit_spawn = False
+
+    if bonus_fruit_spawn:
+        pygame.draw.rect(game_window, yellow,
+                     pygame.Rect(bonus_fruit_position[0], bonus_fruit_position[1], 10, 10))
 
     for pos in snake_body:
         for x in range(0, 800, 10):
