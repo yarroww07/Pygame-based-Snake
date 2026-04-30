@@ -3,6 +3,7 @@ import pygame
 import time
 import random
 
+
 snake_speed = 15
 
 # Window size
@@ -97,10 +98,19 @@ def game_over():
     pygame.display.flip()
     
     # after 2 seconds we will quit the program
-    time.sleep(2)
+   #time.sleep(2)
     
     # deactivating pygame library
-    pygame.quit()
+   #while running:
+     #for event in pygame.event.get():
+          # if event.type == pygame.KEYDOWN:
+#               if event.key == pygame.K_SPACE:
+         #          running =True
+     #          if event.key == pygame.K_ESCAPE:
+      #             running = False
+         #          pygame.quit()   
+    
+  #ygame.quit()
     
     # quit the program
     quit()
@@ -136,7 +146,16 @@ while True:
     if snake_position[0] == fruit_position[0] and snake_position[1] == fruit_position[1]:
         score += 10
         fruit_spawn = False
-        #poison_spawn=False
+        
+        if not fruit_spawn:
+            fruit_position = [random.randrange(1, (window_x//10)) * 10, 
+                      random.randrange(1, (window_y//10)) * 10]
+            poison_position = [random.randrange(1, (window_x//10)) * 10, 
+                      random.randrange(1, (window_y//10)) * 10]
+            fruit_spawn = True
+            poison_spawn = True
+            
+  
     else:
         snake_body.pop()
 
@@ -144,39 +163,26 @@ while True:
     if poison_spawn:
         if snake_position[0] == poison_position[0] and snake_position[1] == poison_position[1]:
             score -= 10
-            
-        
             poison_position = [random.randrange(1, (window_x//10)) * 10, 
                            random.randrange(1, (window_y//10)) * 10]
             poison_spawn = False
-            
-                
-        if not fruit_spawn:
-            fruit_position = [random.randrange(1, (window_x//10)) * 10, 
-                          random.randrange(1, (window_y//10)) * 10]
-            poison_position = [random.randrange(1, (window_x//10)) * 10, 
-                       random.randrange(1, (window_y//10)) * 10]
-            fruit_spawn = True
-            poison_spawn = True   
-          
+ 
+        
         if not poison_spawn:
-            poison_position = [random.randrange(1, (window_x//10)) * 10, 
+           
+                poison_position = [random.randrange(1, (window_x//10)) * 10, 
                       random.randrange(1, (window_y//10)) * 10]
-            poison_spawn = True
+                poison_spawn = True
+                
 
-    
-    
     game_window.fill(black)
     
     for pos in snake_body:
         pygame.draw.rect(game_window, green, pygame.Rect(pos[0], pos[1], 10, 10))
-    
-    
-    pygame.draw.rect(game_window, white, pygame.Rect(fruit_position[0], fruit_position[1], 10, 10))
-    
-   
-    pygame.draw.rect(game_window, red, pygame.Rect(poison_position[0], poison_position[1], 10, 10))
 
+        pygame.draw.rect(game_window, white, pygame.Rect(fruit_position[0], fruit_position[1], 10, 10))
+    
+        pygame.draw.rect(game_window, red, pygame.Rect(poison_position[0], poison_position[1], 10, 10))
    
     if score < 0:
         game_over()
