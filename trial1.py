@@ -40,6 +40,20 @@ bonus_fruit_duration = random.randint(5000,10000)
 bonus_fruit_spawn_chance = 0.001 #per frame i think? 
 
 
+# BOMB FRUIT VARIABLES
+bomb_fruit_spawn = False
+bomb_fruit_position = [0,0]
+bomb_fruit_timer = 0
+bomb_fruit_duration = random.randint(60000, 180000)
+bomb_fruit_spawn_chance = 0.002
+
+# BORDERS
+border_right = window_x
+border_left = 0
+border_up = 0
+border_down = window_y
+shrink = 20
+
 
 # defining snake default position
 snake_position = [100, 50]
@@ -64,8 +78,12 @@ fruit_dictionary = {'normal': {
     'multiplier': {
         'color': yellow,
         'effect': 'triple_score',
-        'score': 30,
-        'chance': 0.3
+        'score': 30
+    },
+    'bomb': {
+        'color': green,
+        'effect': 'none',
+        'score': 0
     }}
 
 fruit_position = [random.randrange(1, (window_x//10)) * 10, 
@@ -91,7 +109,7 @@ def randomize_fruit():
             return name
 
 
-selected_fruit = randomize_fruit()
+selected_fruit = 'normal'
 
 # displaying Score function
 def show_score(choice, color, font, size):
@@ -211,12 +229,18 @@ while True:
         snake_body.pop()
         
     if not fruit_spawn:
-        selected_fruit = randomize_fruit()
+        selected_fruit = 'normal'
         fruit_position = [random.randrange(1, (window_x//10)) * 10, 
                           random.randrange(1, (window_y//10)) * 10]
         
     fruit_spawn = True
     game_window.fill(black)
+    
+    for x in range(0, 800, 10):
+        pygame.draw.line(game_window, (150,150,150), (x,0), (x,600))
+    for y in range(0, 600, 10):
+        pygame.draw.line(game_window, (150,150,150), (0,y), (800,y))
+
     
     fruit_color = fruit_dictionary[selected_fruit]['color']
 
@@ -241,14 +265,14 @@ while True:
                      pygame.Rect(bonus_fruit_position[0], bonus_fruit_position[1], 10, 10))
 
     for pos in snake_body:
-        for x in range(0, 800, 10):
-            pygame.draw.line(game_window, (150,150,150), (x,0), (x,600))
-        for y in range(0, 600, 10):
-            pygame.draw.line(game_window, (150,150,150), (0,y), (800,y))
         pygame.draw.rect(game_window, green,
                          pygame.Rect(pos[0], pos[1], 10, 10))
     pygame.draw.rect(game_window, fruit_color, pygame.Rect(
         fruit_position[0], fruit_position[1], 10, 10))
+    pygame.draw.rect(game_window, red, pygame.Rect(0, border_down, window_x, 10))
+    # pygame.draw.rect(game_window, red, pygame.Rect(border_up, 0, window_x, 10))
+    pygame.draw.rect(game_window, red, pygame.Rect(border_right, 0,10, window_y))
+    pygame.draw.rect(game_window, red, pygame.Rect(0, border_left,10, window_y))
     # points = [(400,50), (500,150)]
     # border_right = pygame.draw.line(game_window, red, (0,0), points,10)
     # print('border left')
@@ -258,6 +282,11 @@ while True:
     # border_down = pygame.draw.line(game_window, yellow,(0,480),(720,480),10)
     # print(border_left)
 
+# border_right = window_x
+# border_left = 0
+# border_up = 0
+# border_down = window_y
+# shrink = 20
     
 
 
