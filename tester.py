@@ -3,6 +3,7 @@ import pygame
 import time
 import random
 
+player_decision_to_continue = False
 
 snake_speed = 15
 
@@ -17,6 +18,7 @@ red = pygame.Color(255, 0, 0)
 green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 
+
 # Initialising pygame
 pygame.init()
 
@@ -27,15 +29,13 @@ game_window = pygame.display.set_mode((window_x, window_y))
 # FPS (frames per second) controller
 fps = pygame.time.Clock()
 
+
 # defining snake default position
 snake_position = [100, 50]
 
 # defining first 4 blocks of snake body
-snake_body = [[100, 50],
-              [90, 50],
-              [80, 50],
-              [70, 50]
-              ]
+snake_body = [[100, 50], [90, 50], [80, 50], [70, 50]]
+              
 # fruit position
 fruit_position = [random.randrange(1, (window_x//10)) * 10, 
                   random.randrange(1, (window_y//10)) * 10]
@@ -79,41 +79,62 @@ def show_score(choice, color, font, size):
 def game_over():
   
     # creating font object my_font
-    my_font = pygame.font.SysFont('times new roman', 50)
+    my_font = pygame.font.SysFont('times new roman', 40)
+    font = pygame.font.SysFont('times new roman', 20)
     
     # creating a text surface on which text 
     # will be drawn
-    game_over_surface = my_font.render(
-        'Your Score is : ' + str(score), True, red)
+    
+    if score >=0:
+        game_over_surface = my_font.render(
+            'Your Score is : ' + str(score), True, red)
+        # print the instructions if you want to continue playing
+        menu_instruction = font.render( 
+            'Press space to continue or escape (esc) to quit',True, red)
+   #will print zero if score is negative, since score cant be negative
+    else:
+        game_over_surface = my_font.render(
+            'Your Score is : ' + '0', True, red)
+        menu_instruction = font.render( 
+            'Press space to continue or escape (esc) to quit', True, red)
     
     # create a rectangular object for the text 
     # surface object
     game_over_rect = game_over_surface.get_rect()
+    #creates the menu rectangle so it doesnt overlap the game over score
+    menu_instruction_rect = menu_instruction.get_rect()
     
     # setting position of the text
     game_over_rect.midtop = (window_x/2, window_y/4)
+    #defines how big we want the window to be
+    menu_instruction_rect.midtop= (window_x/2 , window_y/2)
+    
     
     # blit will draw the text on screen
     game_window.blit(game_over_surface, game_over_rect)
+    #without this the menu instructions will not be shown
+    game_window.blit(menu_instruction , menu_instruction_rect)
     pygame.display.flip()
     
     # after 2 seconds we will quit the program
-   #time.sleep(2)
+    time.sleep(2)
     
-    # deactivating pygame library
-   #while running:
-     #for event in pygame.event.get():
-          # if event.type == pygame.KEYDOWN:
-#               if event.key == pygame.K_SPACE:
-         #          running =True
-     #          if event.key == pygame.K_ESCAPE:
-      #             running = False
-         #          pygame.quit()   
+    #this is to let the player loop the game or quit
     
-  #ygame.quit()
     
-    # quit the program
-    quit()
+    for event in pygame.event.get():
+             
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                #changes the players choice to true so the loop at line 211 
+                #will reset the game 
+                return True
+            
+            #kicks the player out of the program
+            if event.key == pygame.K_ESCAPE:
+                     pygame.quit()
+                     quit()
+                 
 
 while True:
     
@@ -185,14 +206,44 @@ while True:
         pygame.draw.rect(game_window, red, pygame.Rect(poison_position[0], poison_position[1], 10, 10))
    
     if score < 0:
-        game_over()
+        player_decision_to_continue = game_over()
+        
     if snake_position[0] < 0 or snake_position[0] > window_x-10:
-        game_over()
+        player_decision_to_continue = game_over()
+        
     if snake_position[1] < 0 or snake_position[1] > window_y-10:
-        game_over()
+        player_decision_to_continue = game_over()
+        
     for block in snake_body[1:]:
         if snake_position[0] == block[0] and snake_position[1] == block[1]:
-            game_over()
+            player_decision_to_continue = game_over()
+    
+    if player_decision_to_continue:
+        # putting back snake into starting position
+        snake_position = [100, 50]
+
+        # defining first 4 blocks of snake body
+        snake_body = [[100, 50], [90, 50], [80, 50], [70, 50]]
+                      
+        # fruit position
+        fruit_position = [random.randrange(1, (window_x//10)) * 10, 
+                          random.randrange(1, (window_y//10)) * 10]
+
+        fruit_spawn = True
+
+        poison_position = [random.randrange(1, (window_x//10))*10,
+                           random.randrange(1, (window_y//10))*10]
+
+        poison_spawn = True
+        
+        # setting default snake direction towards
+        # right
+        direction = 'RIGHT'
+        change_to = direction
+
+        # initial score
+        score = 0
+        player_decision_to_continue = False
 
     show_score(1, white, 'times new roman', 20)
     pygame.display.update()
