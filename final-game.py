@@ -169,22 +169,21 @@ def game_over():
     game_window.blit(menu_instruction , menu_instruction_rect)
     pygame.display.flip()
     
-    # after 2 seconds we will quit the program
-    time.sleep(2)
+    
     
     #this is to let the player loop the game or quit
     
-    
-    for event in pygame.event.get():
+    while True:
+        for event in pygame.event.get():
              
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
                 #changes the players choice to true so the loop at line 211 
                 #will reset the game 
-                return True
+                    return True
             
             #kicks the player out of the program
-            if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE:
                      pygame.quit()
                      quit()
                  
