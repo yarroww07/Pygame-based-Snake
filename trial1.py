@@ -17,6 +17,7 @@ red = pygame.Color(255, 0, 0)
 green = pygame.Color(0, 255, 0)
 blue = pygame.Color(0, 0, 255)
 yellow = pygame.Color(255, 255, 0)
+orange = pygame.Color(255, 140, 0)
 
 
 
@@ -37,7 +38,8 @@ bonus_fruit_spawn = False
 bonus_fruit_position = [0, 0]
 bonus_fruit_timer = 0
 bonus_fruit_duration = random.randint(5000,10000)
-bonus_fruit_spawn_chance = 0.001 #per frame i think? 
+bonus_fruit_spawn_chance = 0.2 #per frame i think?
+
 
 
 # BOMB FRUIT VARIABLES
@@ -45,8 +47,7 @@ bomb_fruit_spawn = False
 bomb_fruit_position = [0,0]
 bomb_fruit_timer = 0
 bomb_fruit_duration = random.randint(60000, 180000)
-bomb_fruit_spawn_chance = 0.002
-
+bomb_fruit_spawn_chance = 0.2
 # BORDERS
 border_right = window_x
 border_left = 0
@@ -81,7 +82,7 @@ fruit_dictionary = {'normal': {
         'score': 30
     },
     'bomb': {
-        'color': green,
+        'color': orange,
         'effect': 'none',
         'score': 0
     }}
@@ -98,16 +99,6 @@ change_to = direction
 
 # initial score
 score = 0
-
-def randomize_fruit():
-    r = random.random()
-    probability = 0
-
-    for name, data in fruit_dictionary.items():
-        probability += data['chance']
-        if r < probability:
-            return name
-
 
 selected_fruit = 'normal'
 
@@ -230,8 +221,10 @@ while True:
         
     if not fruit_spawn:
         selected_fruit = 'normal'
-        fruit_position = [random.randrange(1, (window_x//10)) * 10, 
-                          random.randrange(1, (window_y//10)) * 10]
+        fruit_position = [
+            random.randrange((border_left + 10) // 10, (border_right - 10) // 10) * 10,
+            random.randrange((border_up + 10) // 10, (border_down - 10) // 10) * 10
+        ]
         
     fruit_spawn = True
     game_window.fill(black)
@@ -252,6 +245,7 @@ while True:
                 random.randrange(1, (window_y//10)) * 10
             ]
             bonus_fruit_timer = pygame.time.get_ticks()
+            bonus_fruit_duration = random.randint(5000,10000)
     else:
         if pygame.time.get_ticks() - bonus_fruit_timer > bonus_fruit_duration:
             bonus_fruit_spawn = False
@@ -263,39 +257,50 @@ while True:
     if bonus_fruit_spawn:
         pygame.draw.rect(game_window, yellow,
                      pygame.Rect(bonus_fruit_position[0], bonus_fruit_position[1], 10, 10))
+    
+    if not bomb_fruit_spawn:
+        if random.random() < bomb_fruit_spawn_chance:
+            bomb_fruit_spawn = True
+            bomb_fruit_position = [
+                random.randrange(1, (window_x // 10)) * 10,
+                random.randrange(1, (window_y//10)) * 10
+            ]
+            bomb_fruit_timer = pygame.time.get_ticks()
+            bomb_fruit_duration = random.randint(60000, 180000)
+    else:
+        if pygame.time.get_ticks() - bomb_fruit_timer > bomb_fruit_duration: 
+            bomb_fruit_spawn = False
+        
+        elif snake_position[0] == bomb_fruit_position[0] and snake_position[1] == bomb_fruit_position[1]:
+            border_left += shrink
+            border_right -= shrink
+            border_up += shrink
+            border_down -= shrink
+            bomb_fruit_spawn = False
+    
+    if bomb_fruit_spawn:
+        pygame.draw.rect(game_window, orange,
+                         pygame.Rect(bomb_fruit_position[0], bomb_fruit_position[1], 10, 10))
 
     for pos in snake_body:
         pygame.draw.rect(game_window, green,
                          pygame.Rect(pos[0], pos[1], 10, 10))
     pygame.draw.rect(game_window, fruit_color, pygame.Rect(
         fruit_position[0], fruit_position[1], 10, 10))
-    pygame.draw.rect(game_window, red, pygame.Rect(0, border_down, window_x, 10))
-    # pygame.draw.rect(game_window, red, pygame.Rect(border_up, 0, window_x, 10))
-    pygame.draw.rect(game_window, red, pygame.Rect(border_right, 0,10, window_y))
-    pygame.draw.rect(game_window, red, pygame.Rect(0, border_left,10, window_y))
-    # points = [(400,50), (500,150)]
-    # border_right = pygame.draw.line(game_window, red, (0,0), points,10)
-    # print('border left')
-    # border_left = pygame.draw.line(game_window, white,(50,0),(50,480),10)
-    # print('etc')
-    # border_up = pygame.draw.line(game_window, green,(720,0),(720,480),10)
-    # border_down = pygame.draw.line(game_window, yellow,(0,480),(720,480),10)
-    # print(border_left)
+    border_thickness = 10
+    pygame.draw.rect(game_window, red, pygame.Rect(border_left, border_up, border_right - border_left, border_thickness))        # top
+    pygame.draw.rect(game_window, red, pygame.Rect(border_left, border_down - border_thickness, border_right - border_left, border_thickness))  # bottom
+    pygame.draw.rect(game_window, red, pygame.Rect(border_left, border_up, border_thickness, border_down - border_up))           # left
+    pygame.draw.rect(game_window, red, pygame.Rect(border_right - border_thickness, border_up, border_thickness, border_down - border_up))
 
-# border_right = window_x
-# border_left = 0
-# border_up = 0
-# border_down = window_y
-# shrink = 20
-    
 
 
     # Game Over conditions
     # if snake_position[0] > border_left[0]:
     #     game_over()
-    if snake_position[0] < 0 or snake_position[0] > window_x-10:
+    if snake_position[0] < border_left + border_thickness or snake_position[0] >= border_right - border_thickness:
         game_over()
-    if snake_position[1] < 0 or snake_position[1] > window_y-10:
+    if snake_position[1] < border_up + border_thickness or snake_position[1] >= border_down - border_thickness:
         game_over()
 
     # Touching the snake body
