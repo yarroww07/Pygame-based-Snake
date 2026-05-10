@@ -37,7 +37,7 @@ bonus_fruit_spawn = False
 bonus_fruit_position = [0, 0]
 bonus_fruit_timer = 0
 bonus_fruit_duration = random.randint(5000,10000)
-bonus_fruit_spawn_chance = 0.2 #per frame i think?
+bonus_fruit_spawn_chance = 0.2 #per frame
 
 # POISON FRUIT VARIABLES
 poison_fruit_spawn = False
@@ -77,8 +77,7 @@ snake_body = [[100, 50],
 fruit_dictionary = {'normal': {
     'color': white,
     'effect': 'none',
-    'score': 10,
-    'chance': 0.7},
+    'score': 10},
     'multiplier': {
         'color': yellow,
         'effect': 'triple_score',
@@ -338,9 +337,9 @@ while True:
     for pos in snake_body:
         border_thickness = 10
         pygame.draw.rect(game_window, green, pygame.Rect(pos[0], pos[1], 10, 10))
-
+        # Drawing Fruit
         pygame.draw.rect(game_window, white, pygame.Rect(fruit_position[0], fruit_position[1], 10, 10))
-
+        # Drawing Borders
         pygame.draw.rect(game_window, red, pygame.Rect(border_left, border_up, border_right - border_left, border_thickness))        # top
         pygame.draw.rect(game_window, red, pygame.Rect(border_left, border_down - border_thickness, border_right - border_left, border_thickness))  # bottom
         pygame.draw.rect(game_window, red, pygame.Rect(border_left, border_up, border_thickness, border_down - border_up))           # left
